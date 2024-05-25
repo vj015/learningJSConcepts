@@ -81,3 +81,30 @@ Promise.prototype.myfinally = function (cb) {
     }
   );
 };
+
+//Promise.allSettled()
+/**
+ * Promise.allSettled() returns a promise which will resolve with outcome of all promises passed in input promise array
+ */
+const myPromiseAllSettled = function (taskList) {
+  const res = [];
+  let idx = 0;
+  return new Promise((resolve) => {
+    taskList.forEach((task, index) => {
+      task
+        .then((val) => {
+          res[index] = { status: "fulfilled", value: val };
+          idx++;
+        })
+        .catch((err) => {
+          res[index] = { status: "rejected", reason: err };
+          idx++;
+        })
+        .finally(() => {
+          if (idx === taskList.length) {
+            resolve(res);
+          }
+        });
+    });
+  });
+};
