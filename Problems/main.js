@@ -48,3 +48,22 @@ const myPromiseAny = function (taskList) {
     });
   });
 };
+
+//Promise.race() Polyfill
+/**
+ * Promise.race() accepts an array of promise and fulfills as soon as any promise reolves or rejects as soon as any promise rejects
+ */
+
+const myPromiseRace = function (taskList) {
+  return new Promise((resolve, reject) => {
+    taskList.forEach((task) => {
+      task
+        .then((val) => {
+          resolve(val);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  });
+};
