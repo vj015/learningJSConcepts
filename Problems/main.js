@@ -24,18 +24,27 @@ const myPromiseAll = function (taskList) {
   });
 };
 
-//Test Case 1
-function task(time) {
-  return new Promise(function (resolve, reject) {
-    setTimeout(function () {
-      resolve(time);
-    }, time);
+//Promise.Any() Polyfill
+/**
+ * Promise.Any() accepts an array of Promises. It resolves as soon as any of the promise is fulfilled and if none of the promise fulfills then it will returns an array with rejection message of all promises. Its reverse of promise.all
+ */
+
+const myPromiseAny = function (taskList) {
+  const res = [];
+  let i = 0;
+  return new Promise((resolve, reject) => {
+    taskList.forEach((task) => {
+      task
+        .then((val) => {
+          resolve(val);
+        })
+        .catch((err) => {
+          res.push(err);
+          i++;
+          if (i === taskList.length) {
+            reject(res);
+          }
+        });
+    });
   });
-}
-let taskList = [task(1000), task(5000), task(3000)];
-//run promise.all
-myPromiseAll(taskList)
-  .then((results) => {
-    console.log("got results", results);
-  })
-  .catch(console.error);
+};
