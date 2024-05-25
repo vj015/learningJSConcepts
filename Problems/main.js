@@ -67,3 +67,17 @@ const myPromiseRace = function (taskList) {
     });
   });
 };
+// Promise.finally() Polyfill
+Promise.prototype.myfinally = function (cb) {
+  const p = this.constructor || Promise;
+  return p.then(
+    (val) => {
+      Promise.resolve(cb).then(() => val);
+    },
+    (err) => {
+      Promise.resolve(cb).then(() => {
+        throw err;
+      });
+    }
+  );
+};
