@@ -94,13 +94,12 @@ class MyPromise {
   finally(cb) {
     this.then(
       (val) => {
-        MyPromise.resolve(cb).then(() => val);
-        return;
+        cb();
+        return val;
       },
       (err) => {
-        MyPromise.resolve(cb).then(() => {
-          throw err;
-        });
+        cb();
+        throw err;
       }
     );
   }
@@ -124,4 +123,7 @@ const promise = new MyPromise((resolve, reject) => {
 });
 promise.then((value) => {
   console.log(value);
+});
+promise.finally(() => {
+  console.log("Inside finally");
 });
