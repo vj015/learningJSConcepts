@@ -9,3 +9,23 @@ const executeInSeries = async (promises) => {
     }
   }
 };
+
+const executeInParallel = (promises, cb) => {
+  const success = [];
+  const errors = [];
+  let completed = 0;
+  promises.forEach((p) => {
+    p.then((val) => {
+      success.push(val);
+    })
+      .catch((err) => {
+        errors.push(err);
+      })
+      .finally(() => {
+        completed++;
+        if (completed >= promises.length) {
+          cb(errors, success);
+        }
+      });
+  });
+};
