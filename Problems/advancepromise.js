@@ -130,3 +130,79 @@ const asyncReject = (arr, fn) => {
   });
 };
 
+//Execute promises with a priority: A sort of priority queue for resolving promises
+/**
+ * const promises = [
+ {status: 'resolve', priority: 4},
+ {status: 'reject', priority: 1},
+ {status: 'resolve', priority: 2},
+ {status: 'reject', priority: 3}
+];
+ */
+const executeWithPriority = (promises) => {
+  if (!promises || !promises.length) {
+    return Promise.reject("No promise provided");
+  }
+  const output = Array(promises.length).fill(null);
+  return new Promise((resolve, reject) => {
+    const checkStatus = () => {
+      for (let i = 0; i < output.length; i++) {
+        if (output[i] === null) {
+          return;
+        }
+        if (output[i].status === "fulfilled") {
+          resolve(output[i].value);
+        }
+      }
+      reject(output);
+    };
+    promises.forEach((promise, index) => {
+      Promise.resolve(promise)
+        .then((val) => {
+          output[index] = {
+            value: val,
+            status: "fulfilled",
+          };
+        })
+        .catch((err) => {
+          output[index] = {
+            status: "Rejected",
+            error: err,
+          };
+        })
+        .finally(() => {
+          checkStatus();
+        });
+    });
+  });
+};
+
+//create a pausable autoincreamenter
+const pausableAutoIncreamenter = (init = 0, steps = 1000) => {
+  let count = init;
+  let intervalId = null;
+  const startInterval = () => {
+    if (intervalId === null) {
+      intervalId = setInterval(() => {
+        console.log(count);
+        count += steps;
+      }, 1000);
+    }
+  };
+  const stopInterval = () => {
+    clearInterval(intervalId);
+    intervalId = null;
+  };
+  return {
+    startInterval,
+    stopInterval,
+  };
+};
+let obj = pausableAutoIncreamenter();
+obj.startInterval();
+setTimeout(() => {
+  obj.stopInterval();
+}, 5000);
+setTimeout(() => {
+  obj.startInterval();
+}, 7000);
