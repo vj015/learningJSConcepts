@@ -1,9 +1,9 @@
 //implement debounce function [Basic one]
 function calling(...args) {
-  console.log("Calling from Inside btn", args);
+  console.log("Calling from Inside btn at", Date.now());
 }
 
-const outerDebounce = customdebounce(calling, 3000, false, false);
+const outerDebounce = throttle(calling, 3000);
 
 function debounce(fn, delay) {
   let timer;
@@ -35,5 +35,25 @@ function customdebounce(fn, delay, leading, trailing) {
       }
       timer = null;
     }, delay);
+  };
+}
+
+function throttle(fn, delay) {
+  let timer;
+  let lastran;
+  return function (...args) {
+    const context = this;
+    if (!lastran) {
+      fn.apply(context, args);
+      lastran = Date.now();
+    } else {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (Date.now() - lastran >= delay) {
+          fn.apply(context, args);
+          lastran = Date.now();
+        }
+      }, delay - (Date.now() - lastran));
+    }
   };
 }
